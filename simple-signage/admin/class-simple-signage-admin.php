@@ -3,7 +3,7 @@
  * Simple Signage Admin Class.
  *
  * @package SIMPLE_Signage
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('ABSPATH')) {
@@ -46,7 +46,14 @@ class SIMPLE_Signage_Admin {
     }
 
     public function register_settings() {
-        register_setting('simple_signage_settings_group', 'simple_signage_defaults');
+        //register_setting('simple_signage_settings_group', 'simple_signage_defaults');
+	register_setting(
+		'simple_signage_settings_group',
+		'simple_signage_defaults',
+    		[
+		        'sanitize_callback' => [$this, 'sanitize_settings'],
+    		]
+	);
         add_settings_section(
             'simple_signage_defaults_section',
             __('Default Slide Values', 'simple-signage'),
@@ -57,6 +64,14 @@ class SIMPLE_Signage_Admin {
         add_settings_field('default_effect', __('Default Transition Effect', 'simple-signage'), [$this, 'render_effect_field'], 'signage-settings', 'simple_signage_defaults_section');
         add_settings_field('default_orientation', __('Default Orientation', 'simple-signage'), [$this, 'render_orientation_field'], 'signage-settings', 'simple_signage_defaults_section');
     }
+
+	public function sanitize_settings($options) {
+	    $clean = [];
+	    $clean['duration'] = isset($options['duration']) ? absint($options['duration']) : 10;
+	    $clean['effect'] = isset($options['effect']) ? sanitize_key($options['effect']) : 'fade';
+	    $clean['orientation'] = isset($options['orientation']) ? sanitize_key($options['orientation']) : 'landscape';
+	    return $clean;
+	}
 
     public function render_duration_field() {
         $options = get_option('simple_signage_defaults');
@@ -137,6 +152,7 @@ class SIMPLE_Signage_Admin {
         <?php
     }
 
+/*
     public function save_meta_data($post_id, $post) {
         if (!isset($_POST['signage_meta_nonce']) || !wp_verify_nonce($_POST['signage_meta_nonce'], 'save_signage_slide_settings') || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || !current_user_can('edit_post', $post_id)) {
             return;
@@ -151,6 +167,35 @@ class SIMPLE_Signage_Admin {
             update_post_meta($post_id, $meta_key, $value);
         }
     }
+*/
+
+//fixed save_meta_date() function 
+public function save_meta_data($post_id, $post) {
+    // Security checks
+    if (!isset($_POST['signage_meta_nonce']) || !wp_verify_nonce($_POST['signage_meta_nonce'], 'save_signage_slide_settings') || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || !current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    // Get plugin-wide defaults to use as a fallback
+    $defaults = get_option('simple_signage_defaults', []);
+    $default_duration    = isset($defaults['duration']) ? absint($defaults['duration']) : 10;
+    $default_effect      = isset($defaults['effect']) ? sanitize_key($defaults['effect']) : 'fade';
+    $default_orientation = isset($defaults['orientation']) ? sanitize_key($defaults['orientation']) : 'landscape';
+
+    // Sanitize and prepare data for saving
+    $fields_to_save = [
+        '_signage_order'        => isset($_POST['signage_order']) ? absint($_POST['signage_order']) : 0,
+        '_signage_duration'     => !empty($_POST['signage_duration']) ? absint($_POST['signage_duration']) : $default_duration,
+        '_signage_effect'       => !empty($_POST['signage_effect']) ? sanitize_key($_POST['signage_effect']) : $default_effect,
+        '_signage_orientation'  => !empty($_POST['signage_orientation']) ? sanitize_key($_POST['signage_orientation']) : $default_orientation,
+    ];
+
+    // Save each meta field
+    foreach ($fields_to_save as $meta_key => $value) {
+        update_post_meta($post_id, $meta_key, $value);
+    }
+}
+
 
     private function get_transition_effects() {
         return [
