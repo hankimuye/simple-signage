@@ -1,6 +1,6 @@
 /**
  * Simple Signage - Frontend Stylesheet
- * @version 1.5
+ * @version 1.6
  */
 html, body {
     margin: 0 !important;
@@ -39,16 +39,25 @@ header, footer, .site-header, .site-footer, #wpadminbar, .admin-bar {
     height: 100%;
     object-fit: contain;
 }
+
+/* --- NEW INCOMING TRANSITION LOGIC --- */
+
+/* Set the base transition property for the animation */
 body.signage-slide {
-    opacity: 1;
-    transform: scale(1) translate(0, 0);
     transition: opacity 0.8s ease, transform 0.8s ease;
 }
-body.is-transitioning { opacity: 0; }
-body.effect-slide-up.is-transitioning    { transform: translateY(-100%); }
-body.effect-slide-down.is-transitioning  { transform: translateY(100%); }
-body.effect-slide-left.is-transitioning  { transform: translateX(-100%); }
-body.effect-slide-right.is-transitioning { transform: translateX(100%); }
-body.effect-fade.is-transitioning        { opacity: 0; transform: scale(1); }
-body.effect-none.is-transitioning        { transition-duration: 0s; }
 
+/* Define the INITIAL (pre-animation) state for each effect class */
+body.effect-fade        { opacity: 0; }
+body.effect-slide-up    { transform: translateY(100%); }
+body.effect-slide-down  { transform: translateY(-100%); }
+body.effect-slide-left  { transform: translateX(100%); }
+body.effect-slide-right { transform: translateX(-100%); }
+body.effect-none        { transition-duration: 0s; }
+
+
+/* Define the FINAL (animated-in) state. JS will add this class on page load. */
+body.is-visible {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+}
