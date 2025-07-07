@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: SIMPLE Signage
- * Plugin URI:  https:/github.com/hankimuye/simple-signage/
+ * Plugin URI:  https://yourwebsite.com/
  * Description: Registers a custom post type for digital signage slides.
- * Version:     1.5
- * Author:      kbarends (with lots of help from Google Gemini)
- * Author URI:  https://barends.eu/
+ * Version:     1.6
+ * Author:      kbarends with the help of google gemini
+ * Author URI:  https://yourwebsite.com/
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: simple-signage
