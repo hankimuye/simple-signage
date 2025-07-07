@@ -6,7 +6,7 @@
  * It removes all theme interference and provides a clean slate for the slide content.
  *
  * @package SIMPLE_Signage
- * @version 1.5
+ * @version 1.6
  */
 
 // Get slide-specific metadata
